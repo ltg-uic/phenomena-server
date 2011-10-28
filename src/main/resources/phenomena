@@ -1,0 +1,187 @@
+#!/bin/sh
+#
+# Phenomena Server daemon script
+# Created by gugo
+#
+# This script manages the phenomena-server daemon process.  This script should
+# only be run as root and may double as an init script if desired.  You
+# can symlink it into your rc directories manually, or if you have
+# chkconfig available, you can copy/symlink it into your init.d directory
+# and chkconfig --add it.  It's recommended to name it phenomena instead of
+# phenomena in the init.d directory.
+#
+
+#####
+# Begin setup work
+#####
+
+# Initialization
+CMD=$1
+PATH="/sbin:/bin:/usr/bin:/usr/sbin"
+RETVAL=0
+
+# Make sure we are running as root
+set `/usr/bin/id`
+if [ $1 != "uid=0(root)" ]; then
+	echo "$0: must be run as root"
+	exit 1
+fi
+
+# If phenomena user is not set elsewhere, set to phenomena.
+[ -z "$PHENOMENA_USER" ] && PHENOMENA_USER="phenomena"
+
+# If pid file path is not set elsewhere, set to /var/run/phenomena.pid.
+[ -z "$PHENOMENA_PIDFILE" ] && PHENOMENA_PIDFILE="/var/run/phenomena.pid"
+
+# -----------------------------------------------------------------
+
+# If a phenomena home variable has not been specified, try to determine it.
+if [ -z "$PHENOMENA_HOME" -o ! -d "$PHENOMENA_HOME" ]; then
+	if [ -d "/usr/share/phenomena-server" ]; then
+		PHENOMENA_HOME="/usr/share/phenomena-server"
+	else
+		echo "Could not find Phenomena Server installation under /usr/share."
+		exit 1
+	fi
+fi
+
+# Attempt to locate java installation.
+if [ -z "$JAVA_HOME" ]; then
+	if [ -d "${PHENOMENA_HOME}/jre" ]; then
+		JAVA_HOME="${PHENOMENA_HOME}/jre"
+	elif [ -d "/etc/alternatives/jre" ]; then
+		JAVA_HOME="/etc/alternatives/jre"
+	else
+		JAVA_HOME="/usr/lib/jvm/default-java"
+		if [ -z "$JAVA_HOME" ]; then
+			if [ -d "/usr/java" -a -d "/usr/java/bin" ]; then
+				JAVA_HOME="/usr/java"
+			fi
+		fi
+	fi
+fi
+JAVACMD="${JAVA_HOME}/bin/java"
+
+if [ ! -d "$JAVA_HOME" -o ! -x "$JAVACMD" ]; then
+	echo "Error: JAVA_HOME is not defined correctly."
+	echo "       Can not sure execute $JAVACMD."
+	exit 1
+fi
+
+# Prepare location of phenomena libraries
+PHENOMENA_LIB="${PHENOMENA_HOME}/lib"
+
+# Prepare phenomena command line
+PHENOMENA_OPTS="${PHENOMENA_OPTS} -Dlogback.configurationFile=${PHENOMENA_HOME}/config/logger.xml"
+
+# Prepare local java class path
+LOCALCLASSPATH="${PHENOMENA_LIB}/*"
+LOCALCLASSPATH="${LOCALCLASSPATH}:${PHENOMENA_HOME}/bin/phenomena-server.jar"
+
+# Prepare configuration file
+CONFIG_FILE="${PHENOMENA_HOME}/config/server.xml"
+
+
+# Export any necessary variables
+export JAVA_HOME JAVACMD
+
+# Lastly, prepare the full command that we are going to run.
+PHENOMENA_RUN_CMD="${JAVACMD} -server ${PHENOMENA_OPTS} -cp ${LOCALCLASSPATH} ltg.ps.PhenomenaServer ${CONFIG_FILE}"
+#####
+# End setup work
+#####
+
+
+
+start() {
+	OLD_PWD=`pwd`
+	cd $PHENOMENA_HOME/bin
+
+        # Start daemons.
+        echo "Starting phenomena. This might take some time: \c"
+	#Waits for the XMPP server to start
+	sleep 30
+	su - $PHENOMENA_USER -c "$PHENOMENA_RUN_CMD &"
+	PID=`ps -u $PHENOMENA_USER | grep -v grep | awk '{print $1}' | tail -n 1`
+	RETVAL=$?
+	if [ $RETVAL -eq 0 -a ! -z "$PHENOMENA_PIDFILE" ]; then
+		echo $PID > $PHENOMENA_PIDFILE
+	fi
+
+	[ $RETVAL -eq 0 -a -d /var/lock/subsys ] && touch /var/lock/subsys/phenomena
+
+	echo
+
+	sleep 1 # allows prompt to return
+	cd $OLD_PWD
+	echo ...started!
+}
+
+stop() {
+	# Stop daemons.
+	echo "Shutting down phenomena: \c"
+
+	[ -f "$PHENOMENA_PIDFILE" ] && kill `cat $PHENOMENA_PIDFILE`
+	RETVAL=$?
+	echo
+
+	[ $RETVAL -eq 0 -a -f "$PHENOMENA_PIDFILE" ] && rm -f $PHENOMENA_PIDFILE
+	[ $RETVAL -eq 0 -a -f "/var/lock/subsys/phenomena" ] && rm -f /var/lock/subsys/phenomena
+	echo ...stopped!
+}
+
+restart() {
+	stop
+	sleep 10 # give it a few moments to shut down
+	start
+}
+
+condrestart() {
+	[ -e "/var/lock/subsys/phenomena" ] && restart
+	return 0
+}
+
+status() {
+	pid=`cat $PHENOMENA_PIDFILE 2>&1`
+	if [ "$?" = "1" ]; then
+		echo "phenomena is not running"
+		RETVAL=0
+	else 
+		ps -p $pid > /dev/null 2>&1
+		if [ "$?" = "0" ]; then 
+			echo "phenomena is running"
+			RETVAL=0
+		else 
+			echo "phenomena is not running"
+			RETVAL=0
+		fi
+	fi
+}
+
+
+# Handle how we were called.
+case "$CMD" in
+	start)
+		start
+		;;
+	stop)
+		stop
+		;;
+	restart)
+		restart
+		;;
+	condrestart)
+		condrestart
+		;;
+	reload)
+		restart
+		;;
+	status) 
+		status
+		;;
+	*)
+		echo "Usage $0 {start|stop|restart|status|condrestart|reload}"
+		RETVAL=1
+esac
+
+exit $RETVAL

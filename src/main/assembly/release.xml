@@ -1,0 +1,77 @@
+<assembly xmlns="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0" 
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/plugins/maven-assembly-plugin/assembly/1.1.0 http://maven.apache.org/xsd/assembly-1.1.0.xsd">
+  <id>bin</id>
+  <formats>
+    <format>zip</format>
+  </formats>
+  
+  <!-- Dependencies in /lib -->
+  <dependencySets>
+    <dependencySet>
+      <outputDirectory>/lib</outputDirectory>
+      <useProjectArtifact>false</useProjectArtifact>
+      <unpack>false</unpack>
+      <scope>runtime</scope>
+    </dependencySet>
+  </dependencySets>
+  
+ 
+  <fileSets>
+  	<!-- Readme, License and Notice (if they are present) -->
+    <fileSet>
+        <directory>${project.basedir}</directory>
+        <outputDirectory>/</outputDirectory>
+        <includes>
+                <include>README*</include>
+                <include>LICENSE*</include>
+                <include>NOTICE*</include>
+        </includes>
+    </fileSet>
+    
+    <!-- Configuration files in /config -->
+    <fileSet>
+    	<directory>${project.basedir}/src/main/config</directory>
+      	<outputDirectory>/config</outputDirectory>
+      	<excludes>
+        	<exclude>*-dev.xml</exclude>
+      </excludes>
+    </fileSet>
+  </fileSets>
+  
+  
+  <files>
+  	<!-- Jar file and startup scripts in /bin -->
+    <file>
+        <source>${project.build.directory}/${project.build.finalName}.jar</source>
+        <outputDirectory>/bin</outputDirectory>
+ 		<destName>phenomena-server.jar</destName>
+    </file>
+    <file>
+        <source>${project.basedir}/src/main/resources/startup.sh</source>
+        <outputDirectory>/bin</outputDirectory>
+    </file> 
+    
+    <!-- Boot script in /bin/extras -->
+    <file>
+    	<source>${project.basedir}/src/main/resources/phenomena</source>
+      	<outputDirectory>/bin/extras</outputDirectory>
+    </file>       
+     
+    <!-- Creates /db, /logs, /phenomena dirs with README inside-->
+    <file>
+        <source>${project.basedir}/src/main/db/README</source>
+      	<outputDirectory>/db</outputDirectory>
+    </file>
+    <file>
+        <source>${project.basedir}/src/main/logs/README</source>
+      	<outputDirectory>/logs</outputDirectory>
+    </file>
+    <file>
+        <source>${project.basedir}/src/main/phenomena/README</source>
+      	<outputDirectory>/phenomena</outputDirectory>
+    </file>
+    
+  </files>
+  
+</assembly>

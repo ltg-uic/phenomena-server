@@ -1,0 +1,19 @@
+<?xml version='1.0' encoding='utf-8'?>
+
+<server>
+	<comment>
+	 The server configuration file uses the same syntax 
+	 of the java properties XML file.
+	</comment>
+	
+	<entry key="XMPP_SERVER_PORT">5222</entry>
+	<entry key="DEFAULT_RESOURCE_ID">phenomenaServer</entry>
+	<entry key="XMPP_SERVER_URL">yourServerAddressHere</entry>
+	<entry key="XMPP_SERVER_DOMAIN">yourServerDomainHere</entry>
+	<entry key="DEFAULT_PS_XMPP_USERNAME">yourServerUsernameHere</entry>
+	<entry key="DEFAULT_PS_XMPP_PASSWORD">yourServerPasswordHere</entry>
+
+    <comment>Note how the following paths DON'T include a separator at the end</comment>
+	<entry key="DB_LOCATION">../db</entry>
+	<entry key="PHENOMENA_LOCATION">../phenomena</entry>
+</server>
