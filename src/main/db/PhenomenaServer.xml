@@ -1,5 +1,3 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<PhenomenaServer>
-  <phenomenaPod id="hr_dev" pass="hr_dev" type="Wallcology" running="true"/>
-</PhenomenaServer>
+<PhenomenaServer/>

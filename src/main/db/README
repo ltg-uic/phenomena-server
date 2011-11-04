@@ -1,1 +1,4 @@
 This directory is used by the server to store its state and eventually phenomena data.
+
+If you are using a file base storage system for your phenomena it would be desirable
+to use this folder.
