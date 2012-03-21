@@ -8,8 +8,8 @@
 	
 	<entry key="XMPP_SERVER_PORT">5222</entry>
 	<entry key="DEFAULT_RESOURCE_ID">phenomenaServer</entry>
-	<entry key="XMPP_SERVER_URL">ltg.evl.uic.edu</entry>
-	<entry key="XMPP_SERVER_DOMAIN">ltg.evl.uic.edu</entry>
+	<entry key="XMPP_SERVER_URL">phenomena.evl.uic.edu</entry>
+	<entry key="XMPP_SERVER_DOMAIN">phenomena.evl.uic.edu</entry>
 	<entry key="DEFAULT_PS_XMPP_USERNAME">ltgpod_dev</entry>
 	<entry key="DEFAULT_PS_XMPP_PASSWORD">ltgpod_dev</entry>
 
