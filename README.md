@@ -7,12 +7,16 @@ Check the project Wiki @ http://phenomena.evl.uic.edu/wiki for more information.
 
 ## CURRENT VERSION
 
+### 0.2.1
+* Added iq command for supported phenomena inquiry
+
+
+##VERSIONS HISTORY
+
 ### 0.2
 * API version 1.1 are used 
 * Added origin of command to PhenomenaCommand
 * Supported phenomena: WallCology and HelioRoom
-
-##VERSIONS HISTORY
 
 ### 0.1.4
 * Fixed a bug that crashed the server when messages contained no body element 
