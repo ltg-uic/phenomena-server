@@ -2,17 +2,11 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
-	<groupId>ltg</groupId>
 	<artifactId>phenomena-server</artifactId>
 	<name>Phenomena Server</name>
 	<version>0.2.1</version>
 
 	<dependencies>
-		<dependency>
-			<groupId>ltg</groupId>
-			<artifactId>phenomena-api</artifactId>
-			<version>1.1</version>
-		</dependency>
 		<dependency>
 			<groupId>mysql</groupId>
 			<artifactId>mysql-connector-java</artifactId>
@@ -27,6 +21,11 @@
 			<groupId>org.igniterealtime.smack</groupId>
 			<artifactId>smackx</artifactId>
 			<version>3.2.1</version>
+		</dependency>
+		<dependency>
+			<groupId>ltg</groupId>
+			<artifactId>phenomena-api</artifactId>
+			<version>1.1</version>
 		</dependency>
 	</dependencies>
 
@@ -66,4 +65,5 @@
 
 	</build>
 
+	<groupId>edu.uic.evl.ltg</groupId>
 </project>

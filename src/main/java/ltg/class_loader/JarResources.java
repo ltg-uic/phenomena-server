@@ -117,6 +117,7 @@ public final class JarResources
 					",csize="+ze.getCompressedSize() );
 		    }
 		}
+	    zis.close();
 	    }
 	catch (NullPointerException e)
 		{
