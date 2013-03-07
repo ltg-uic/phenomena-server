@@ -35,8 +35,7 @@ public class PSClassLoader {
 	private String jarDir = null;
 
 	
-	public PSClassLoader(String dir) {
-		this.jarDir = dir;
+	public PSClassLoader() {
 	}
 
 
@@ -44,12 +43,19 @@ public class PSClassLoader {
 	 * Loads all classes from jar files in the phenomena directory.
 	 * The method processes a jar at the time and progressively adds classes to the factories 
 	 */
-	public void loadAllPhenomena() {
+	public void loadAllPhenomena(String jar_dir) {
+		this.jarDir = jar_dir;
 		File[] jars = findJars();
 		if (jars==null || jars.length==0)
 			return;
 		for (int i = 0; i<jars.length; i++)
 			loadJarClasses(jars[i]);
+	}
+	
+	
+	public void loadPhenomena(String jar) {
+		File jarFile = new File(jar);
+		loadJarClasses(jarFile);
 	}
 	
 	
@@ -72,11 +78,15 @@ public class PSClassLoader {
 	 * @param jar the Jar currently being loaded.
 	 */
 	private void loadJarClasses(File jar) {
+		if (!jar.exists()) {
+			log.error("Impossible to load jar file \"" + jar.getName() + "\"");
+			return;
+		}
 		List<Class<?>> jarClasses = null;
 		try {
 			jarClasses = loadJar(jar);
 		} catch (ClassNotFoundException e) {
-			log.error("Impossible to load the jar file!");
+			log.error("Impossible to load the jar file \"" + jar.getName() + "\"");
 			return;
 		}
 		if(verifyJar(jarClasses))

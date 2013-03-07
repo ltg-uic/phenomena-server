@@ -30,9 +30,6 @@ public class ConfFile {
 	private File configFile = null;
 	 
 
-	/**
-	 * Default constructor.
-	 */
 	public ConfFile(String configFile) {
 		if (configFile==null) {
 			log.error("Undefined configuration file! Terminating...");
@@ -41,6 +38,24 @@ public class ConfFile {
 			this.configFile = new File(configFile);
 			checkConfigFile();
 		}
+	}
+	
+	
+	public ConfFile() {
+	}
+	
+	
+	public void setDefaultProperties(String jid, String password) {
+		String[] s = jid.split("@", 2);
+		properties.put("XMPP_SERVER_PORT", "5222");
+		properties.put("DEFAULT_RESOURCE_ID", "phenomenaServer");
+		properties.put("XMPP_SERVER_URL", s[1]);
+		properties.put("XMPP_SERVER_DOMAIN", s[1]);
+		properties.put("DEFAULT_PS_XMPP_USERNAME", s[0]);
+		properties.put("DEFAULT_PS_XMPP_PASSWORD", password);
+		properties.put("DB_LOCATION", "src/main/db");
+		// Save the db location as a system property
+		storeDbLocation();
 	}
 
 	

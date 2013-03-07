@@ -4,7 +4,7 @@
 
 	<artifactId>phenomena-server</artifactId>
 	<name>Phenomena Server</name>
-	<version>0.2.1</version>
+	<version>0.3</version>
 
 	<dependencies>
 		<dependency>

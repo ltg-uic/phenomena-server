@@ -34,8 +34,7 @@ public class PhenomenaServer {
 	private Logger log = LoggerFactory.getLogger(this.getClass());
 	private ConfFile config= null;
 	private PSNetworkController net = null;
-	private PSPersistence db = null;
-	private PSClassLoader cl = null; 
+	private PSPersistence db = null; 
 
 
 	/**
@@ -56,12 +55,28 @@ public class PhenomenaServer {
 	}
 
 
-	private void start(String configFile) {
+	public void start(String configFile) {
 		config = new ConfFile(configFile);
 		if(!config.parse())
 			System.exit(1);
-		cl = new PSClassLoader(ConfFile.getProperty("PHENOMENA_LOCATION"));
-		cl.loadAllPhenomena();
+		new PSClassLoader().loadAllPhenomena(ConfFile.getProperty("PHENOMENA_LOCATION"));
+		log.info("Supported phenomena: " + PhenomenaFactory.printAvailablePhenomena());
+		db = new PSPersistence(this.getClass().getSimpleName());
+		db.restore();
+		net = new PSNetworkController(ConfFile.getProperty("DEFAULT_PS_XMPP_USERNAME"),
+				ConfFile.getProperty("DEFAULT_PS_XMPP_PASSWORD"));
+		if (!net.connect()) 
+			Thread.currentThread().interrupt();
+		if(!Thread.currentThread().isInterrupted()) {
+			log.info("Phenomena server STARTED");
+			net.listen();
+		}
+	}
+	
+	
+	public void start(String phenomenaJarFile, ConfFile configuration) {
+		config = configuration;
+		new PSClassLoader().loadPhenomena(phenomenaJarFile);
 		log.info("Supported phenomena: " + PhenomenaFactory.printAvailablePhenomena());
 		db = new PSPersistence(this.getClass().getSimpleName());
 		db.restore();
